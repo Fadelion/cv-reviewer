@@ -1,0 +1,122 @@
+[
+  {
+    "id": "impact_star_method",
+    "category": "impact",
+    "title": "Use the STAR Method for Bullet Points",
+    "content": "Every bullet point in your experience section should follow the STAR structure: Situation, Task, Action, Result. Focus heavily on the Action you took and the quantifiable Result. Avoid simply listing job duties; describe the impact of your actions.",
+    "examples": {
+      "before": "Responsible for managing the company website and fixing bugs.",
+      "after": "Redesigned the company e-commerce platform using React, resolving 15+ critical checkout bugs and increasing mobile conversion rate by 12% over 3 months."
+    }
+  },
+  {
+    "id": "impact_quantify",
+    "category": "impact",
+    "title": "Quantify Achievements with Clear Metrics",
+    "content": "Do not just state that you improved a process; quantify it. Use numbers, percentages, dollar amounts, and timeframes (e.g., $, %, hours saved, revenue generated). If exact numbers aren't available, use realistic, conservative estimates.",
+    "examples": {
+      "before": "Helped decrease load times on the server.",
+      "after": "Optimized database queries and API routing, reducing average server response time by 40% (from 800ms to 480ms)."
+    }
+  },
+  {
+    "id": "impact_action_verbs",
+    "category": "impact",
+    "title": "Start with Strong Action Verbs",
+    "content": "Begin every bullet point with a strong, past-tense action verb (or present-tense for your current role). Avoid passive or weak phrases like 'Responsible for', 'Assisted with', 'Helped in', or 'Worked on'. Use precise verbs like 'Spearheaded', 'Orchestrated', 'Optimized', 'Negotiated', or 'Formulated'.",
+    "examples": {
+      "before": "Helped team build new features in Python.",
+      "after": "Co-engineered 4 new microservices in Python, expanding API throughput by 25% and enabling real-time notifications for 50k+ active users."
+    }
+  },
+  {
+    "id": "pres_logical_flow",
+    "category": "presentation",
+    "title": "Structure with Chronological Flow & Standard Sections",
+    "content": "Format your resume in reverse chronological order (newest first). Use clear, recognizable section headers: Professional Experience, Projects, Technical Skills, Education. Keep the layout simple, consistent, and easy to scan for both humans and ATS systems.",
+    "examples": {
+      "before": "Having experience in 2021 before 2023, listing random blogs first.",
+      "after": "Clean headers in order: Professional Experience (2023 - Present) followed by (2021 - 2023), then Projects, Skills, and Education."
+    }
+  },
+  {
+    "id": "pres_brevity_length",
+    "category": "presentation",
+    "title": "Keep CV Concise and Focused (1-2 Pages)",
+    "content": "Limit your resume to 1 page for professionals with under 5 years of experience, and a maximum of 2 pages for senior profiles. Be ruthless with word count: remove filler words, repetitive achievements, and details from roles older than 10 years.",
+    "examples": {
+      "before": "A 4-page resume detailing every college project and retail job from 15 years ago.",
+      "after": "A crisp, high-impact 1-page resume focusing strictly on relevant software engineering achievements."
+    }
+  },
+  {
+    "id": "exp_tech_depth",
+    "category": "experience",
+    "title": "Demonstrate Technical and Business Depth",
+    "content": "Do not just list technology names. Contextualize how you used them to solve complex business problems. Highlight system design, architecture decisions, scalability challenges, and collaboration with cross-functional stakeholders.",
+    "examples": {
+      "before": "Skills: AWS, Docker, Kubernetes.",
+      "after": "Architected and deployed a containerized pipeline using Docker and Kubernetes on AWS, cutting deployment cycles from 45 minutes to under 8 minutes."
+    }
+  },
+  {
+    "id": "exp_career_progression",
+    "category": "experience",
+    "title": "Highlight Scope and Career Progression",
+    "content": "Show growth in responsibilities over time. If you were promoted, mentored junior developers, led projects, or took ownership of a product domain, state it clearly. Hiring managers look for indicators of leadership and accountability.",
+    "examples": {
+      "before": "Promoted to Senior Engineer. Did code reviews.",
+      "after": "Promoted to Senior Software Engineer within 12 months; mentored 3 junior developers and owned the end-to-end delivery of the core billing system."
+    }
+  },
+  {
+    "id": "keywords_ats_alignment",
+    "category": "keywords",
+    "title": "Tailor Content with ATS Keywords",
+    "content": "Applicant Tracking Systems (ATS) scan for exact matches of skills and concepts listed in the job description. Tailor your resume by natural inclusion of key technical skills, tools, and methodologies mentioned in the target job description.",
+    "examples": {
+      "before": "Created automated tests for software quality.",
+      "after": "Developed comprehensive CI/CD pipelines incorporating automated Unit Testing, Integration Testing, and End-to-End Testing (Cypress, PyTest)."
+    }
+  },
+  {
+    "id": "keywords_grouping",
+    "category": "keywords",
+    "title": "Group Skills Logically for Readability",
+    "content": "Structure your Technical Skills section by categorizing skills (e.g., Languages, Frameworks, Databases, Tools/DevOps). This makes it highly readable for recruiters and allows ATS parsers to easily categorize your competencies.",
+    "examples": {
+      "before": "Skills: React, Python, PostgreSQL, AWS, Git, Node, Docker, SQL, JavaScript.",
+      "after": "• Languages: Python, JavaScript, SQL\\n• Frameworks: React, Node.js, FastAPI\\n• Databases & Tools: PostgreSQL, AWS, Docker, Git"
+    }
+  },
+  {
+    "id": "gen_no_pronouns",
+    "category": "general",
+    "title": "Write in Third-Person (No 'I' or 'My')",
+    "content": "Never use first-person pronouns like 'I', 'me', 'my', 'we', or 'our' in your CV. Write in an implied third-person, professional telegraphic style. Begin sentences with action verbs or adjectives.",
+    "examples": {
+      "before": "I developed this app using React and I managed my team.",
+      "after": "Developed web application using React and managed a team of 3 developers."
+    }
+  },
+  {
+    "id": "gen_proofread",
+    "category": "general",
+    "title": "Eliminate Typos and Grammatical Errors",
+    "content": "Spelling and grammar mistakes are instant red flags. Proofread your resume multiple times, verify dates are consistent (e.g., Month Year - Month Year), and check formatting alignments like bullet indents and margins.",
+    "examples": {
+      "before": "Worked as a softwer engineer from 2022 to 2021.",
+      "after": "Worked as a Software Engineer from June 2021 to December 2022."
+    }
+  },
+  {
+    "id": "gen_professional_summary",
+    "category": "general",
+    "title": "Craft a Focused Professional Summary",
+    "content": "Instead of a generic 'Objective' statement about what you want, write a 3-4 sentence 'Professional Summary' highlighting what you bring to the table. Summarize your years of experience, core expertise, and a couple of key achievements.",
+    "examples": {
+      "before": "Objective: Seeking a challenging role in software engineering to utilize my skills.",
+      "after": "Results-driven Software Engineer with 4+ years of experience building high-performance web applications. Expert in Python and React, with a proven track record of reducing latency by 35% and spearheading database optimization initiatives. Passionate about scalable system design and agile collaboration."
+    }
+  }
+]

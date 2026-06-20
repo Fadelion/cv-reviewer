@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ResumeAI Critiquer - High Impact CV Reviewer & ATS Optimizer</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Lucide Icons for premium UI elements -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Ambient background glows -->
+        <div class="glow-sphere glow-1"></div>
+        <div class="glow-sphere glow-2"></div>
+        <div class="glow-sphere glow-3"></div>
+
+        <!-- Sidebar / Navigation -->
+        <header class="main-header">
+            <div class="logo-area">
+                <div class="logo-icon">
+                    <i data-lucide="sparkles"></i>
+                </div>
+                <h1>Resume<span>AI</span></h1>
+                <span class="badge badge-premium">PRO</span>
+            </div>
+            <div class="api-status" id="api-status-indicator">
+                <span class="status-dot pulses"></span>
+                <span class="status-text">System Active</span>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <!-- Phase 1: Input Form -->
+            <section class="section-input" id="input-section">
+                <div class="hero-text-block">
+                    <h2>Elevate Your Resume with <span class="text-gradient">Structured AI Critique</span></h2>
+                    <p>Submit your professional CV against a target job description to get a comprehensive, quantified analysis, missing ATS keywords, and high-impact rewrites.</p>
+                </div>
+
+                <div class="input-grid">
+                    <!-- CV Upload Panel -->
+                    <div class="card glass-card input-card" id="resume-card">
+                        <div class="card-header">
+                            <i data-lucide="file-text" class="card-header-icon text-indigo"></i>
+                            <h3>Your Resume / CV</h3>
+                        </div>
+                        
+                        <div class="card-body">
+                            <!-- Drag and drop zone -->
+                            <div class="upload-zone" id="upload-zone">
+                                <i data-lucide="upload-cloud" class="upload-icon"></i>
+                                <p class="upload-primary-text">Drag & drop your CV here, or <span class="upload-browse">browse files</span></p>
+                                <p class="upload-secondary-text">Supports PDF format (Auto-extracted)</p>
+                                <input type="file" id="file-input" accept="application/pdf" class="hidden-file-input">
+                            </div>
+
+                            <!-- Extracted/Pasted Text Area -->
+                            <div class="text-input-wrapper">
+                                <div class="textarea-header">
+                                    <span>Or paste your CV text below:</span>
+                                    <button class="btn-clear hidden" id="btn-clear-resume">Clear</button>
+                                </div>
+                                <textarea id="resume-text" placeholder="Paste full resume contents here (Experience, Education, Skills, Projects)..." required></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Job Description Panel -->
+                    <div class="card glass-card input-card" id="jd-card">
+                        <div class="card-header">
+                            <i data-lucide="briefcase" class="card-header-icon text-magenta"></i>
+                            <h3>Target Job Description <span class="optional-tag">(Highly Recommended)</span></h3>
+                        </div>
+                        
+                        <div class="card-body">
+                            <div class="text-input-wrapper full-height">
+                                <div class="textarea-header">
+                                    <span>Paste target job listing:</span>
+                                    <button class="btn-clear hidden" id="btn-clear-jd">Clear</button>
+                                </div>
+                                <textarea id="jd-text" placeholder="Paste the target job description or requirements to benchmark your CV against crucial ATS competencies..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="action-footer">
+                    <button class="btn-primary" id="btn-analyze">
+                        <span>Analyze CV & Optimize</span>
+                        <i data-lucide="arrow-right"></i>
+                    </button>
+                </div>
+
+                <!-- PERSISTENT HISTORY PANEL (MEMORY) -->
+                <div class="card glass-card history-card" id="history-panel" style="margin-top: 3.5rem;">
+                    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; padding: 1.25rem 1.5rem;">
+                        <div style="display: flex; align-items: center; gap: 0.75rem;">
+                            <i data-lucide="history" class="card-header-icon text-cyan"></i>
+                            <h3 style="font-family: var(--font-heading); font-size: 1.25rem; font-weight: 600;">Saved Critique Sessions</h3>
+                        </div>
+                        <span class="badge badge-premium" id="lbl-history-count" style="margin: 0;">0 Sessions</span>
+                    </div>
+                    <div class="card-body" style="padding: 1.5rem;">
+                        <div class="history-table-wrapper" style="overflow-x: auto; border-radius: 10px; background: hsla(220, 20%, 8%, 0.4); border: 1px solid var(--border-subtle);">
+                            <table class="history-table" style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.95rem;">
+                                <thead>
+                                    <tr style="border-bottom: 1px solid var(--border-subtle); color: var(--text-secondary); background: hsla(220, 20%, 6%, 0.6);">
+                                        <th style="padding: 12px 16px; font-weight: 600;">Date</th>
+                                        <th style="padding: 12px 16px; font-weight: 600;">Resume File / Title</th>
+                                        <th style="padding: 12px 16px; font-weight: 600;">Target Role</th>
+                                        <th style="padding: 12px 16px; font-weight: 600; text-align: center;">Overall Score</th>
+                                        <th style="padding: 12px 16px; font-weight: 600; text-align: center;">Keyword Match</th>
+                                        <th style="padding: 12px 16px; font-weight: 600; text-align: right;">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="history-list-body">
+                                    <!-- Populated dynamically via JS -->
+                                    <tr>
+                                        <td colspan="6" style="padding: 24px; text-align: center; color: var(--text-muted);">
+                                            <i data-lucide="database-backup" style="width: 24px; height: 24px; margin-bottom: 8px; opacity: 0.5;"></i>
+                                            <p>No past analysis sessions saved in memory. Critique a CV to populate this log.</p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Loading Screen Overlay -->
+            <div class="loading-overlay hidden" id="loading-overlay">
+                <div class="loading-card glass-card">
+                    <div class="radar-scanner">
+                        <div class="circle-radar"></div>
+                        <i data-lucide="scan-face" class="scan-icon animate-pulse"></i>
+                    </div>
+                    <h3>Reviewing your Resume...</h3>
+                    <p class="loading-subtitle">Deep learning models are evaluating your background</p>
+                    
+                    <!-- Progress Steps -->
+                    <div class="loading-steps">
+                        <div class="step-item" id="step-1">
+                            <span class="step-status"><i data-lucide="circle"></i></span>
+                            <span class="step-label">Extracting document structure...</span>
+                        </div>
+                        <div class="step-item" id="step-2">
+                            <span class="step-status"><i data-lucide="circle"></i></span>
+                            <span class="step-label">Calculating standard ATS parsing alignment...</span>
+                        </div>
+                        <div class="step-item" id="step-3">
+                            <span class="step-status"><i data-lucide="circle"></i></span>
+                            <span class="step-label">Consulting Llama-3.3-70b model for structured feedback...</span>
+                        </div>
+                        <div class="step-item" id="step-4">
+                            <span class="step-status"><i data-lucide="circle"></i></span>
+                            <span class="step-label">Refining bullet points via STAR methodologies...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Phase 2: Dashboard Results -->
+            <section class="section-results hidden" id="results-section">
+                <!-- Back button -->
+                <div class="results-header-actions">
+                    <button class="btn-secondary" id="btn-back">
+                        <i data-lucide="chevron-left"></i>
+                        <span>Back to Input</span>
+                    </button>
+                    <div style="display: flex; gap: 0.75rem; align-items: center;">
+                        <button class="btn-primary" id="btn-download-pdf" style="padding: 0.65rem 1.25rem; font-size: 0.95rem;">
+                            <i data-lucide="file-down"></i>
+                            <span>Export PDF Report</span>
+                        </button>
+                        <div class="hologram-date" id="results-timestamp"></div>
+                    </div>
+                </div>
+
+                <!-- Scores Section -->
+                <div class="scores-container">
+                    <!-- Overall Score Card -->
+                    <div class="card glass-card overall-score-card">
+                        <div class="gauge-wrapper">
+                            <svg class="score-svg-gauge" viewBox="0 0 120 120">
+                                <circle class="gauge-bg" cx="60" cy="60" r="50"></circle>
+                                <circle class="gauge-value" id="overall-gauge-value" cx="60" cy="60" r="50" style="stroke-dashoffset: 314;"></circle>
+                            </svg>
+                            <div class="gauge-text">
+                                <span class="score-num" id="lbl-overall-score">0</span>
+                                <span class="score-den">/100</span>
+                            </div>
+                        </div>
+                        <div class="score-details">
+                            <h3>Overall CV Caliber</h3>
+                            <p id="lbl-score-commentary">Analyzing alignment...</p>
+                        </div>
+                    </div>
+
+                    <!-- Category Scores (4 Grid Card) -->
+                    <div class="category-scores-grid">
+                        <div class="card glass-card mini-score-card">
+                            <div class="mini-score-header">
+                                <span>Impact</span>
+                                <i data-lucide="trending-up" class="text-indigo"></i>
+                            </div>
+                            <div class="mini-score-body">
+                                <div class="progress-bar-wrapper">
+                                    <div class="progress-bar-value bg-indigo" id="bar-impact" style="width: 0%;"></div>
+                                </div>
+                                <span class="mini-score-text" id="lbl-impact-score">0%</span>
+                            </div>
+                        </div>
+
+                        <div class="card glass-card mini-score-card">
+                            <div class="mini-score-header">
+                                <span>Presentation</span>
+                                <i data-lucide="layout" class="text-magenta"></i>
+                            </div>
+                            <div class="mini-score-body">
+                                <div class="progress-bar-wrapper">
+                                    <div class="progress-bar-value bg-magenta" id="bar-presentation" style="width: 0%;"></div>
+                                </div>
+                                <span class="mini-score-text" id="lbl-presentation-score">0%</span>
+                            </div>
+                        </div>
+
+                        <div class="card glass-card mini-score-card">
+                            <div class="mini-score-header">
+                                <span>Experience Quality</span>
+                                <i data-lucide="shield-check" class="text-cyan"></i>
+                            </div>
+                            <div class="mini-score-body">
+                                <div class="progress-bar-wrapper">
+                                    <div class="progress-bar-value bg-cyan" id="bar-experience" style="width: 0%;"></div>
+                                </div>
+                                <span class="mini-score-text" id="lbl-experience-score">0%</span>
+                            </div>
+                        </div>
+
+                        <div class="card glass-card mini-score-card">
+                            <div class="mini-score-header">
+                                <span>ATS Keyword Fit</span>
+                                <i data-lucide="key-round" class="text-emerald"></i>
+                            </div>
+                            <div class="mini-score-body">
+                                <div class="progress-bar-wrapper">
+                                    <div class="progress-bar-value bg-emerald" id="bar-keywords" style="width: 0%;"></div>
+                                </div>
+                                <span class="mini-score-text" id="lbl-keywords-score">0%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Executive Summary -->
+                <div class="card glass-card summary-card">
+                    <div class="card-header">
+                        <i data-lucide="award" class="text-amber"></i>
+                        <h3>Executive AI Evaluation</h3>
+                    </div>
+                    <p class="summary-text" id="lbl-exec-summary">Generating detailed synthesis...</p>
+                </div>
+
+                <!-- Dashboard Details Tabs -->
+                <div class="tabs-container">
+                    <div class="tabs-list">
+                        <button class="tab-btn active" data-tab="tab-strengths">
+                            <i data-lucide="clipboard-list"></i>
+                            <span>Strengths & Improvements</span>
+                        </button>
+                        <button class="tab-btn" data-tab="tab-keywords">
+                            <i data-lucide="fingerprint"></i>
+                            <span>ATS Keyword Analytics</span>
+                        </button>
+                        <button class="tab-btn" data-tab="tab-sections">
+                            <i data-lucide="layers"></i>
+                            <span>Section Critique</span>
+                        </button>
+                        <button class="tab-btn" data-tab="tab-rewrites">
+                            <i data-lucide="zap"></i>
+                            <span>Bullet Rewriter</span>
+                            <span class="tab-count-badge" id="lbl-rewrite-count">0</span>
+                        </button>
+                        <button class="tab-btn" data-tab="tab-rag-context">
+                            <i data-lucide="book-open"></i>
+                            <span>RAG Guidance</span>
+                        </button>
+                    </div>
+
+                    <div class="tab-content-wrapper">
+                        <!-- TAB 1: Strengths & Improvements -->
+                        <div class="tab-content active" id="tab-strengths">
+                            <div class="split-feedback-grid">
+                                <!-- Strengths -->
+                                <div class="feedback-column">
+                                    <h4 class="feedback-title text-emerald">
+                                        <i data-lucide="check-circle-2"></i>
+                                        <span>Key Strengths</span>
+                                    </h4>
+                                    <div class="feedback-items-container" id="strengths-list">
+                                        <!-- Dynamically Populated -->
+                                    </div>
+                                </div>
+
+                                <!-- Improvements -->
+                                <div class="feedback-column">
+                                    <h4 class="feedback-title text-rose">
+                                        <i data-lucide="alert-circle"></i>
+                                        <span>Areas to Improve</span>
+                                    </h4>
+                                    <div class="feedback-items-container" id="improvements-list">
+                                        <!-- Dynamically Populated -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- TAB 2: ATS Keyword Gap Finder -->
+                        <div class="tab-content" id="tab-keywords">
+                            <div class="keyword-analytics-layout">
+                                <div class="keyword-score-panel">
+                                    <div class="radial-ring-box">
+                                        <svg class="ring-svg" viewBox="0 0 100 100">
+                                            <circle class="ring-bg" cx="50" cy="50" r="40"></circle>
+                                            <circle class="ring-value" id="keyword-ring-value" cx="50" cy="50" r="40" style="stroke-dashoffset: 251;"></circle>
+                                        </svg>
+                                        <div class="ring-label" id="lbl-keyword-percent">0%</div>
+                                    </div>
+                                    <h5>Keyword Match Quality</h5>
+                                    <p>Percentage of crucial sector competencies detected in your current profile text.</p>
+                                </div>
+
+                                <div class="keyword-lists-panel">
+                                    <div class="keyword-box">
+                                        <h6><span class="dot bg-emerald"></span>Matched Competencies</h6>
+                                        <div class="tag-cloud" id="matched-tags-container">
+                                            <!-- Dynamically Populated -->
+                                        </div>
+                                    </div>
+
+                                    <div class="keyword-box margin-top-md">
+                                        <h6><span class="dot bg-rose"></span>Missing Critical Keywords</h6>
+                                        <p class="tag-cloud-sub">Integrate these skills and methodologies to improve automated screening score:</p>
+                                        <div class="tag-cloud" id="missing-tags-container">
+                                            <!-- Dynamically Populated -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- TAB 3: Section Critique -->
+                        <div class="tab-content" id="tab-sections">
+                            <div class="sections-accordion-layout" id="sections-accordion">
+                                <div class="accordion-item expanded">
+                                    <div class="accordion-header">
+                                        <div class="accordion-header-title">
+                                            <i data-lucide="user"></i>
+                                            <span>Professional Summary / Objective</span>
+                                        </div>
+                                        <i data-lucide="chevron-down" class="accordion-chevron"></i>
+                                    </div>
+                                    <div class="accordion-body">
+                                        <p id="lbl-critique-summary">Analyzing...</p>
+                                    </div>
+                                </div>
+
+                                <div class="accordion-item">
+                                    <div class="accordion-header">
+                                        <div class="accordion-header-title">
+                                            <i data-lucide="history"></i>
+                                            <span>Professional Work History</span>
+                                        </div>
+                                        <i data-lucide="chevron-down" class="accordion-chevron"></i>
+                                    </div>
+                                    <div class="accordion-body">
+                                        <p id="lbl-critique-experience">Analyzing...</p>
+                                    </div>
+                                </div>
+
+                                <div class="accordion-item">
+                                    <div class="accordion-header">
+                                        <div class="accordion-header-title">
+                                            <i data-lucide="folder-git"></i>
+                                            <span>Projects, Education & Technical Skills</span>
+                                        </div>
+                                        <i data-lucide="chevron-down" class="accordion-chevron"></i>
+                                    </div>
+                                    <div class="accordion-body">
+                                        <p id="lbl-critique-projects">Analyzing...</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- TAB 4: Bullet point optimizer -->
+                        <div class="tab-content" id="tab-rewrites">
+                            <div class="bullet-rewriter-intro">
+                                <p>We've converted weak, passive phrases from your work history into quantified, results-focused <strong>STAR bullets</strong>. Click any card's copy button to save the revision.</p>
+                            </div>
+                            <div class="bullet-cards-grid" id="bullet-rewrites-container">
+                                <!-- Dynamically Populated -->
+                            </div>
+                        </div>
+
+                        <!-- TAB 5: RAG Guidelines retrieved -->
+                        <div class="tab-content" id="tab-rag-context">
+                            <div class="bullet-rewriter-intro">
+                                <p>The following expert resume-writing guidelines were retrieved from our local database as highly relevant to your CV structure and domain, and were injected into the AI's system prompt context to guide your critique:</p>
+                            </div>
+                            <div class="rag-cards-grid" id="rag-guidelines-container" style="display: grid; grid-template-columns: 1fr; gap: 1.5rem; margin-top: 1.5rem;">
+                                <!-- Dynamically Populated via JS -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+        
+        <footer class="app-footer">
+            <p>Designed using premium layout tokens. Powered by the Groq Llama-3.3-70b-versatile engine.</p>
+        </footer>
+    </div>
+
+    <!-- Script Entry -->
+    <script src="app.js"></script>
+</body>
+</html>
