@@ -3,10 +3,12 @@ import traceback
 import json
 import os
 from fastapi import FastAPI, Request, UploadFile, File, Form
+from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
+from pydantic import BaseModel, Field, ValidationError
 
 from main import review_cv, GROQ_API_KEY
 import history_db
@@ -20,7 +22,49 @@ async def lifespan(app: FastAPI):
     yield
     # Shutdown phase: No specific cleanup needed for SQLite
 
+class ReviewRequest(BaseModel):
+    resume_text: str = Field(min_length=1, description="Raw CV or resume text")
+    job_description: str = Field(default="", description="Target job description")
+    model: str = Field(default="llama-3.3-70b-versatile", description="Groq model name")
+    filename: str = Field(default="Pasted Resume", description="Original filename or label")
+
+
+class HealthResponse(BaseModel):
+    status: str
+    api_key_configured: bool
+    message: str
+
+
+class ReviewResponse(BaseModel):
+    overall_score: int = Field(ge=0, le=100)
+    scores: dict
+    summary: str
+    strengths: list[dict]
+    improvements: list[dict]
+    keyword_analysis: dict
+    section_critique: dict
+    bullet_rewrites: list[dict]
+    retrieved_context: list[dict] = []
+
+
 app = FastAPI(title="AI CV Reviewer API", description="AI powered professional resume critique system", lifespan=lifespan)
+
+
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    return JSONResponse(
+        status_code=422,
+        content={"error": "Validation error", "details": exc.errors()},
+    )
+
+
+@app.exception_handler(Exception)
+async def unhandled_exception_handler(request: Request, exc: Exception):
+    print(traceback.format_exc())
+    return JSONResponse(
+        status_code=500,
+        content={"error": "Internal Server Error"},
+    )
 
 # Configure CORS
 app.add_middleware(
@@ -31,7 +75,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-@app.get("/api/health")
+@app.get("/api/health", response_model=HealthResponse)
 async def health_status():
     return {
         "status": "healthy",
@@ -39,14 +83,28 @@ async def health_status():
         "message": "AI CV Reviewer backend is running successfully"
     }
 
-@app.post("/api/review")
+@app.post("/api/review", response_model=ReviewResponse)
 async def api_review_cv(request: Request):
     try:
         data = await request.json()
-        resume_text = data.get("resume_text", "")
-        job_description = data.get("job_description", "")
-        model = data.get("model", "llama-3.3-70b-versatile")
-        filename = data.get("filename", "Pasted Resume")
+    except (json.JSONDecodeError, UnicodeDecodeError):
+        return JSONResponse(
+            status_code=400,
+            content={"error": "Invalid JSON payload"}
+        )
+
+    try:
+        if not isinstance(data, dict):
+            return JSONResponse(
+                status_code=400,
+                content={"error": "JSON body must be an object"}
+            )
+
+        payload = ReviewRequest.model_validate(data)
+        resume_text = payload.resume_text
+        job_description = payload.job_description
+        model = payload.model
+        filename = payload.filename
         
         if not resume_text.strip():
             return JSONResponse(
