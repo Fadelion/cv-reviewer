@@ -30,8 +30,8 @@ This project has been enhanced with enterprise-ready features to ensure safety, 
 ## Project Structure
 
 ```md
-├── app.py                  # FastAPI API Server (Endpoints for reviews & history)
-├── main.py                 # Core LLM critique orchestration & Pydantic validation
+├── main.py                  # FastAPI API Server (Endpoints for reviews & history)
+├── core.py                 # Core LLM critique orchestration & Pydantic validation
 ├── rag_retriever.py        # Keyword overlap RAG search & tips selector
 ├── history_db.py           # SQLite database persistence layer for past sessions
 ├── guardrails.py           # Safety checks (lengths, injections, domain, repair layer)
@@ -79,13 +79,13 @@ GROQ_API_KEY=your_groq_api_key_here
 Launch the FastAPI development server:
 
 ```bash
-uv run app.py
+uv run main.py
 ```
 
 or
 
 ```bash
-python app.py
+python main.py
 ```
 
 The server will start at **`http://127.0.0.1:8000`**. Open this address in your web browser to access the CV Reviewer dashboard.

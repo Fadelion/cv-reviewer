@@ -37,9 +37,11 @@ def save_critique(filename: str, job_title: str, overall_score: int, keyword_mat
         VALUES (?, ?, ?, ?, ?, ?, ?)
     """, (filename, job_title, overall_score, keyword_match, cv_text, job_description, result_json_str))
     new_id = cursor.lastrowid
+    if new_id is None:
+        new_id = conn.execute("SELECT last_insert_rowid()").fetchone()[0]
     conn.commit()
     conn.close()
-    return new_id
+    return int(new_id)
 
 def get_history() -> List[Dict[str, Any]]:
     """Returns a list of all historical critiques summaries, sorted by newest first."""
