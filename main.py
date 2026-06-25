@@ -17,10 +17,11 @@ from pdf_generator import generate_critique_pdf
 # Initialize Database on startup
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Startup phase: Initialize database
+    """Manages application startup and shutdown lifecycle events."""
+    # Startup phase: ensure SQLite table exists before first request
     history_db.init_db()
     yield
-    # Shutdown phase: No specific cleanup needed for SQLite
+    # Shutdown phase: no explicit cleanup needed for SQLite file connections
 
 class ReviewRequest(BaseModel):
     resume_text: str = Field(min_length=1, description="Raw CV or resume text")
@@ -51,7 +52,8 @@ app = FastAPI(title="AI CV Reviewer API", description="AI powered professional r
 
 
 @app.exception_handler(RequestValidationError)
-async def validation_exception_handler(request: Request, exc: RequestValidationError):
+async def validation_exception_handler(request: Request, exc: RequestValidationError) -> JSONResponse:
+    """Returns a structured 422 response for Pydantic request validation failures."""
     return JSONResponse(
         status_code=422,
         content={"error": "Validation error", "details": exc.errors()},
@@ -59,7 +61,8 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
 
 
 @app.exception_handler(Exception)
-async def unhandled_exception_handler(request: Request, exc: Exception):
+async def unhandled_exception_handler(request: Request, exc: Exception) -> JSONResponse:
+    """Catches any unhandled exception and returns a generic 500 response."""
     print(traceback.format_exc())
     return JSONResponse(
         status_code=500,
@@ -76,7 +79,8 @@ app.add_middleware(
 )
 
 @app.get("/api/health", response_model=HealthResponse)
-async def health_status():
+async def health_status() -> dict:
+    """Returns API health status and whether the Groq API key is configured."""
     return {
         "status": "healthy",
         "api_key_configured": GROQ_API_KEY is not None,
@@ -84,7 +88,9 @@ async def health_status():
     }
 
 @app.post("/api/review", response_model=ReviewResponse)
-async def api_review_cv(request: Request):
+async def api_review_cv(request: Request) -> dict | JSONResponse:
+    """Validates a CV submission, runs LLM critique, and persists the result to history."""
+    # --- Parse raw JSON body; reject malformed payloads early ---
     try:
         data = await request.json()
     except (json.JSONDecodeError, UnicodeDecodeError):
@@ -157,7 +163,8 @@ async def api_review_cv(request: Request):
         )
 
 @app.get("/api/history")
-async def get_critique_history():
+async def get_critique_history() -> list | JSONResponse:
+    """Returns a list of all past critique sessions stored in the SQLite database."""
     try:
         history = history_db.get_history()
         return history
@@ -169,7 +176,8 @@ async def get_critique_history():
         )
 
 @app.get("/api/history/{critique_id}")
-async def get_critique_detail(critique_id: int):
+async def get_critique_detail(critique_id: int) -> dict | JSONResponse:
+    """Retrieves a single critique session by its database ID."""
     try:
         critique = history_db.get_critique_by_id(critique_id)
         if not critique:
@@ -186,7 +194,8 @@ async def get_critique_detail(critique_id: int):
         )
 
 @app.get("/api/history/{critique_id}/pdf")
-async def get_critique_pdf(critique_id: int):
+async def get_critique_pdf(critique_id: int) -> StreamingResponse | JSONResponse:
+    """Generates and streams a PDF report for a stored critique session."""
     try:
         critique = history_db.get_critique_by_id(critique_id)
         if not critique:
@@ -225,7 +234,8 @@ async def get_critique_pdf(critique_id: int):
         )
 
 @app.delete("/api/history/{critique_id}")
-async def delete_critique_record(critique_id: int):
+async def delete_critique_record(critique_id: int) -> dict | JSONResponse:
+    """Deletes a critique record from the SQLite history by its ID."""
     try:
         success = history_db.delete_critique(critique_id)
         if not success:
@@ -242,9 +252,10 @@ async def delete_critique_record(critique_id: int):
         )
 
 @app.post("/api/extract-pdf")
-async def extract_pdf(file: UploadFile = File(...)):
+async def extract_pdf(file: UploadFile = File(...)) -> dict | JSONResponse:
+    """Accepts an uploaded PDF file and returns its extracted plain text."""
     try:
-        # Check file extension
+        # Reject non-PDF uploads before reading file bytes
         filename = (file.filename or "").lower()
         if not filename.endswith('.pdf'):
             return JSONResponse(
