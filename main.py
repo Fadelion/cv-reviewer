@@ -88,7 +88,7 @@ async def health_status() -> dict:
     }
 
 @app.post("/api/review", response_model=ReviewResponse)
-async def api_review_cv(request: Request) -> dict | JSONResponse:
+async def api_review_cv(request: Request):
     """Validates a CV submission, runs LLM critique, and persists the result to history."""
     # --- Parse raw JSON body; reject malformed payloads early ---
     try:
@@ -163,7 +163,7 @@ async def api_review_cv(request: Request) -> dict | JSONResponse:
         )
 
 @app.get("/api/history")
-async def get_critique_history() -> list | JSONResponse:
+async def get_critique_history():
     """Returns a list of all past critique sessions stored in the SQLite database."""
     try:
         history = history_db.get_history()
@@ -176,7 +176,7 @@ async def get_critique_history() -> list | JSONResponse:
         )
 
 @app.get("/api/history/{critique_id}")
-async def get_critique_detail(critique_id: int) -> dict | JSONResponse:
+async def get_critique_detail(critique_id: int):
     """Retrieves a single critique session by its database ID."""
     try:
         critique = history_db.get_critique_by_id(critique_id)
@@ -194,7 +194,7 @@ async def get_critique_detail(critique_id: int) -> dict | JSONResponse:
         )
 
 @app.get("/api/history/{critique_id}/pdf")
-async def get_critique_pdf(critique_id: int) -> StreamingResponse | JSONResponse:
+async def get_critique_pdf(critique_id: int):
     """Generates and streams a PDF report for a stored critique session."""
     try:
         critique = history_db.get_critique_by_id(critique_id)
@@ -234,7 +234,7 @@ async def get_critique_pdf(critique_id: int) -> StreamingResponse | JSONResponse
         )
 
 @app.delete("/api/history/{critique_id}")
-async def delete_critique_record(critique_id: int) -> dict | JSONResponse:
+async def delete_critique_record(critique_id: int):
     """Deletes a critique record from the SQLite history by its ID."""
     try:
         success = history_db.delete_critique(critique_id)
@@ -252,7 +252,7 @@ async def delete_critique_record(critique_id: int) -> dict | JSONResponse:
         )
 
 @app.post("/api/extract-pdf")
-async def extract_pdf(file: UploadFile = File(...)) -> dict | JSONResponse:
+async def extract_pdf(file: UploadFile = File(...)):
     """Accepts an uploaded PDF file and returns its extracted plain text."""
     try:
         # Reject non-PDF uploads before reading file bytes
