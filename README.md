@@ -78,7 +78,7 @@ pip install -r requirements.txt
 
 ### Configuration
 
-Create a `.env` file in the root of the project (or modify the existing one) to specify your Groq API key:
+Create a `.env` file in the root of the project (or modify the existing one .env.example) to specify your Groq API key:
 
 ```env
 GROQ_API_KEY=your_groq_api_key_here
