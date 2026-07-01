@@ -5,3 +5,4 @@ python-dotenv
 pypdf
 python-multipart
 fpdf2
+pytest
