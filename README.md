@@ -25,20 +25,30 @@ This project has been enhanced with enterprise-ready features to ensure safety, 
 * **Prompt Injection Guardrails**: Filters out adversarial instruction overrides (e.g. "ignore previous instructions", "you are now a recipe bot", "system prompt:") and rejects the request with a `400 Bad Request` security alert.
 * **Domain Check Guardrails**: Validates that the submitted text actually resembles a Resume/CV by checking for overlapping multi-language keywords (e.g., `experience`, `education`, `skills`, `projects`, `contact`) and email/link formats. Unrelated text (e.g., cookie recipes, random articles) is rejected.
 
+### 4. PDF Report Generation
+
+* **Professional PDF Export**: The system includes a dedicated PDF generator (`pdf_generator.py`) that creates beautifully formatted, professional critique reports. Users can download PDF reports for any stored critique session via the `/api/history/{critique_id}/pdf` endpoint.
+* **Structured Layout**: PDF reports feature a clean, professional design with score breakdowns, keyword analysis, section critiques, and STAR bullet rewrites, all formatted with visual indicators and color-coded elements for easy readability.
+
 ---
 
 ## Project Structure
 
 ```md
-├── main.py                  # FastAPI API Server (Endpoints for reviews & history)
+├── main.py                  # FastAPI API Server (Endpoints for reviews, history & PDF export)
 ├── core.py                 # Core LLM critique orchestration & Pydantic validation
 ├── rag_retriever.py        # Keyword overlap RAG search & tips selector
 ├── history_db.py           # SQLite database persistence layer for past sessions
 ├── guardrails.py           # Safety checks (lengths, injections, domain, repair layer)
+├── pdf_generator.py        # Professional PDF report generation module
 ├── cv_rag_db.json          # Database of expert CV writing guidelines (RAG source)
 ├── requirements.txt        # python dependencies list
 ├── pyproject.toml          # uv project configuration file
 ├── uv.lock                 # Lockfile for reproducible python environment
+├── tests/                  # Automated test suite
+│   ├── test_system.py      # System integration tests
+│   ├── test_api_validation.py # API validation tests
+│   └── test_pdf.py         # PDF generation tests
 └── static/                 # Web Interface static assets
     ├── index.html          # Dashboard markup (RAG & History tabs added)
     ├── app.js              # Client side controller (fixed syntax and integrated API)
@@ -68,7 +78,7 @@ pip install -r requirements.txt
 
 ### Configuration
 
-Create a `.env` file in the root of the project (or modify the existing one) to specify your Groq API key:
+Create a `.env` file in the root of the project (or modify the existing one .env.example) to specify your Groq API key:
 
 ```env
 GROQ_API_KEY=your_groq_api_key_here
@@ -94,11 +104,21 @@ The server will start at **`http://127.0.0.1:8000`**. Open this address in your 
 
 ## Verification & Testing
 
-To execute the automated system integration tests (verifying guardrails, SQLite DB saving, RAG retrieval, and Pydantic validation):
+To execute the automated test suite:
 
 ```bash
+# System integration tests (guardrails, SQLite DB saving, RAG retrieval, Pydantic validation)
 uv run python .\tests\test_system.py # On Windows
-#or
-# uv run python tests/test_system.py # On Linux/Mac
+# or
+uv run python tests/test_system.py # On Linux/Mac
 
+# API validation tests
+uv run python .\tests\test_api_validation.py # On Windows
+# or
+uv run python tests/test_api_validation.py # On Linux/Mac
+
+# PDF generation tests
+uv run python .\tests\test_pdf.py # On Windows
+# or
+uv run python tests/test_pdf.py # On Linux/Mac
 ```
