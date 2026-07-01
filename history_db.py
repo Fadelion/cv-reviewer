@@ -3,15 +3,32 @@ import os
 import json
 from typing import List, Dict, Any, Optional
 
-# Database file path
-DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "analyses.db")
+# Database file path (allow override for hosted environments)
+DEFAULT_DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "analyses.db")
+DB_PATH = os.getenv("CV_REVIEWER_DB_PATH", DEFAULT_DB_PATH)
+
+
+def ensure_db_dir(db_path: str) -> None:
+    """Create the parent directory for the SQLite file when needed."""
+    parent_dir = os.path.dirname(os.path.abspath(db_path))
+    if parent_dir:
+        os.makedirs(parent_dir, exist_ok=True)
+
+
+def get_db_path() -> str:
+    """Return the configured database path, ensuring the directory exists."""
+    global DB_PATH
+    DB_PATH = os.getenv("CV_REVIEWER_DB_PATH", DEFAULT_DB_PATH)
+    ensure_db_dir(DB_PATH)
+    return DB_PATH
+
 
 def init_db():
     """Initializes the SQLite database and creates the critiques table if it doesn't exist."""
-    conn = sqlite3.connect(DB_PATH)
+    db_path = get_db_path()
+    conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS critiques (
+    cursor.execute("""\n        CREATE TABLE IF NOT EXISTS critiques (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
             filename TEXT NOT NULL,
@@ -30,7 +47,7 @@ def save_critique(filename: str, job_title: str, overall_score: int, keyword_mat
                   cv_text: str, job_description: str, result_json_str: str) -> int:
     """Saves a critique session to the database and returns its new ID."""
     init_db()
-    conn = sqlite3.connect(DB_PATH)
+    conn = sqlite3.connect(get_db_path())
     cursor = conn.cursor()
     cursor.execute("""
         INSERT INTO critiques (filename, job_title, overall_score, keyword_match, cv_text, job_description, result_json)
@@ -46,7 +63,7 @@ def save_critique(filename: str, job_title: str, overall_score: int, keyword_mat
 def get_history() -> List[Dict[str, Any]]:
     """Returns a list of all historical critiques summaries, sorted by newest first."""
     init_db()
-    conn = sqlite3.connect(DB_PATH)
+    conn = sqlite3.connect(get_db_path())
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
     cursor.execute("""
@@ -62,7 +79,7 @@ def get_history() -> List[Dict[str, Any]]:
 def get_critique_by_id(critique_id: int) -> Optional[Dict[str, Any]]:
     """Returns the full details of a specific critique, including the raw LLM JSON response."""
     init_db()
-    conn = sqlite3.connect(DB_PATH)
+    conn = sqlite3.connect(get_db_path())
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
     cursor.execute("SELECT * FROM critiques WHERE id = ?", (critique_id,))
@@ -81,7 +98,7 @@ def get_critique_by_id(critique_id: int) -> Optional[Dict[str, Any]]:
 def delete_critique(critique_id: int) -> bool:
     """Deletes a critique record from the database."""
     init_db()
-    conn = sqlite3.connect(DB_PATH)
+    conn = sqlite3.connect(get_db_path())
     cursor = conn.cursor()
     cursor.execute("DELETE FROM critiques WHERE id = ?", (critique_id,))
     deleted = cursor.rowcount > 0
